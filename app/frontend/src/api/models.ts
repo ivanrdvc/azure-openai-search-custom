@@ -92,6 +92,7 @@ export type Config = {
     showSpeechOutputAzure: boolean;
     showChatHistoryBrowser: boolean;
     showChatHistoryCosmos: boolean;
+    showChatHistoryCustomDb: boolean;
 };
 
 export type SimpleAPIResponse = {

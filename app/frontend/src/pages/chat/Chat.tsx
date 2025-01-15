@@ -84,6 +84,7 @@ const Chat = () => {
     const [showSpeechOutputAzure, setShowSpeechOutputAzure] = useState<boolean>(false);
     const [showChatHistoryBrowser, setShowChatHistoryBrowser] = useState<boolean>(false);
     const [showChatHistoryCosmos, setShowChatHistoryCosmos] = useState<boolean>(false);
+    const [showChatHistoryCustomDB, setShowChatHistoryCustomDB] = useState<boolean>(false);
     const audio = useRef(new Audio()).current;
     const [isPlaying, setIsPlaying] = useState(false);
 
@@ -111,6 +112,7 @@ const Chat = () => {
             setShowSpeechOutputAzure(config.showSpeechOutputAzure);
             setShowChatHistoryBrowser(config.showChatHistoryBrowser);
             setShowChatHistoryCosmos(config.showChatHistoryCosmos);
+            setShowChatHistoryCustomDB(config.showChatHistoryCustomDb);
         });
     };
 
@@ -161,6 +163,7 @@ const Chat = () => {
     const { loggedIn } = useContext(LoginContext);
 
     const historyProvider: HistoryProviderOptions = (() => {
+        if (showChatHistoryCustomDB) return HistoryProviderOptions.CustomDB;
         if (useLogin && showChatHistoryCosmos) return HistoryProviderOptions.CosmosDB;
         if (showChatHistoryBrowser) return HistoryProviderOptions.IndexedDB;
         return HistoryProviderOptions.None;
@@ -221,6 +224,7 @@ const Chat = () => {
             if (shouldStream) {
                 const parsedResponse: ChatAppResponse = await handleAsyncRequest(question, answers, response.body);
                 setAnswers([...answers, [question, parsedResponse]]);
+
                 if (typeof parsedResponse.session_state === "string" && parsedResponse.session_state !== "") {
                     const token = client ? await getToken(client) : undefined;
                     historyManager.addItem(parsedResponse.session_state, [...answers, [question, parsedResponse]], token);
@@ -356,7 +360,7 @@ const Chat = () => {
             </Helmet>
             <div className={styles.commandsSplitContainer}>
                 <div className={styles.commandsContainer}>
-                    {((useLogin && showChatHistoryCosmos) || showChatHistoryBrowser) && (
+                    {((useLogin && showChatHistoryCosmos) || showChatHistoryBrowser || showChatHistoryCustomDB) && (
                         <HistoryButton className={styles.commandButton} onClick={() => setIsHistoryPanelOpen(!isHistoryPanelOpen)} />
                     )}
                 </div>
@@ -467,7 +471,7 @@ const Chat = () => {
                     />
                 )}
 
-                {((useLogin && showChatHistoryCosmos) || showChatHistoryBrowser) && (
+                {((useLogin && showChatHistoryCosmos) || showChatHistoryBrowser || showChatHistoryCustomDB) && (
                     <HistoryPanel
                         provider={historyProvider}
                         isOpen={isHistoryPanelOpen}

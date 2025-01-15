@@ -1,7 +1,6 @@
-const BACKEND_URI = "";
-
 import { ChatAppResponse, ChatAppResponseOrError, ChatAppRequest, Config, SimpleAPIResponse, HistoryListApiResponse, HistroyApiResponse } from "./models";
 import { useLogin, getToken, isUsingAppServicesLogin } from "../authConfig";
+import { API_CONFIG } from "./config";
 
 export async function getHeaders(idToken: string | undefined): Promise<Record<string, string>> {
     // If using login and not using app services, add the id token of the logged in account as the authorization
@@ -15,7 +14,7 @@ export async function getHeaders(idToken: string | undefined): Promise<Record<st
 }
 
 export async function configApi(): Promise<Config> {
-    const response = await fetch(`${BACKEND_URI}/config`, {
+    const response = await fetch(`${API_CONFIG.BACKEND_URI}/api/v1/config`, {
         method: "GET"
     });
 
@@ -24,7 +23,7 @@ export async function configApi(): Promise<Config> {
 
 export async function askApi(request: ChatAppRequest, idToken: string | undefined): Promise<ChatAppResponse> {
     const headers = await getHeaders(idToken);
-    const response = await fetch(`${BACKEND_URI}/ask`, {
+    const response = await fetch(`${API_CONFIG.BACKEND_URI}/api/v1/ask`, {
         method: "POST",
         headers: { ...headers, "Content-Type": "application/json" },
         body: JSON.stringify(request)
@@ -42,7 +41,7 @@ export async function askApi(request: ChatAppRequest, idToken: string | undefine
 }
 
 export async function chatApi(request: ChatAppRequest, shouldStream: boolean, idToken: string | undefined): Promise<Response> {
-    let url = `${BACKEND_URI}/chat`;
+    let url = `${API_CONFIG.BACKEND_URI}/api/v1/chat`;
     if (shouldStream) {
         url += "/stream";
     }
@@ -79,7 +78,7 @@ export async function getSpeechApi(text: string): Promise<string | null> {
 }
 
 export function getCitationFilePath(citation: string): string {
-    return `${BACKEND_URI}/content/${citation}`;
+    return `${API_CONFIG.BACKEND_URI}}/api/v1/content/${citation}`;
 }
 
 export async function uploadFileApi(request: FormData, idToken: string): Promise<SimpleAPIResponse> {

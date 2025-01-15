@@ -1,6 +1,7 @@
 // Refactored from https://github.com/Azure-Samples/ms-identity-javascript-react-tutorial/blob/main/1-Authentication/1-sign-in/SPA/src/authConfig.js
 
 import { IPublicClientApplication } from "@azure/msal-browser";
+import { API_CONFIG } from "./api/config";
 
 const appServicesAuthTokenUrl = ".auth/me";
 const appServicesAuthTokenRefreshUrl = ".auth/refresh";
@@ -54,7 +55,7 @@ interface AuthSetup {
 
 // Fetch the auth setup JSON data from the API if not already cached
 async function fetchAuthSetup(): Promise<AuthSetup> {
-    const response = await fetch("/auth_setup");
+    const response = await fetch(`${API_CONFIG.BACKEND_URI}/api/v1/auth_setup`);
     if (!response.ok) {
         throw new Error(`auth setup response was not ok: ${response.status}`);
     }
@@ -108,6 +109,8 @@ globalThis.cachedAppServicesToken = null;
  * @returns {Promise<AppServicesToken | null>} A promise that resolves to an AppServicesToken if the user is authenticated, or null if authentication is not supported or fails.
  */
 const getAppServicesToken = (): Promise<AppServicesToken | null> => {
+    // Temporary workaround for local development without the backend
+    return Promise.resolve(null);
     const checkNotExpired = (appServicesToken: AppServicesToken) => {
         const currentDate = new Date();
         const expiresOnDate = new Date(appServicesToken.expires_on);

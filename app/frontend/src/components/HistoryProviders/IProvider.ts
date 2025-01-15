@@ -6,7 +6,8 @@ export type Answers = [user: string, response: ChatAppResponse][];
 export const enum HistoryProviderOptions {
     None = "none",
     IndexedDB = "indexedDB",
-    CosmosDB = "cosmosDB"
+    CosmosDB = "cosmosDB",
+    CustomDB = "customDb"
 }
 
 export interface IHistoryProvider {
